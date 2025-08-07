@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --color-body-gradient-from: white;
+    --color-body-gradient-via: #FEF2F2;
+    --color-body-gradient-to: #FFF7ED;
+
+    --color-accent-gradient-from: #71f6f8;
+    --color-accent-gradient-to: #493cfb;
+
+    --color-text-heading: #5126dc;
+}

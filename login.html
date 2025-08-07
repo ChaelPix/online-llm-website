@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cmyk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/template_app/favicon.png">
+    <link href="output.css" rel="stylesheet">
+    <title>Template Website Login</title>
+</head>
+<body class="h-screen bg-gradient-to-br from-[var(--color-body-gradient-from)] via-[var(--color-body-gradient-via)] to-[var(--color-body-gradient-to)] flex items-center justify-center text-black">
+    <div class="card w-96 bg-white shadow-xl border border-red-100">
+        <div class="h-2 w-full bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] rounded-t"></div>
+        <div class="card-body">
+            <h2 class="card-title justify-center mb-4 text-[var(--color-text-heading)]">Template Website Login</h2>
+            <form id="loginForm">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-black">Username</span>
+                    </label>
+                    <input type="text" id="username" class="input input-bordered bg-white text-black" required autofocus>
+                </div>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-black">Password</span>
+                    </label>
+                    <input type="password" id="password" class="input input-bordered bg-white text-black" required>
+                </div>
+                <div id="errorMsg" class="text-error text-sm mt-2 hidden"></div>
+                <div class="form-control mt-6">
+                    <button type="submit" class="btn bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] text-white border-0 shadow font-bold">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.classList.add('hidden');
+            try {
+                const res = await fetch('/template_app/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    localStorage.setItem('jwt', data.token);
+                    window.location.href = '/template_app/app';
+                } else {
+                    errorDiv.textContent = data.error || 'Login failed';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch {
+                errorDiv.textContent = 'Network error';
+                errorDiv.classList.remove('hidden');
+            }
+        };
+    </script>
+</body>
+</html>

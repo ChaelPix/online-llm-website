@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cmyk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/template_app/favicon.png">
+    <link href="output.css" rel="stylesheet">
+    <title>Template Website</title>
+</head>
+<body class="h-screen bg-gradient-to-br from-[var(--color-body-gradient-from)] via-[var(--color-body-gradient-via)] to-[var(--color-body-gradient-to)] text-black flex items-center justify-center">
+    <div class="card w-96 bg-white shadow-xl border border-red-100">
+        <div class="h-2 w-full bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] rounded-t"></div>
+        <div class="card-body">
+            <h2 class="card-title justify-center mb-4 text-[var(--color-text-heading)]">Welcome to the App!</h2>
+            <p class="text-center">This is your main application page.</p>
+            <div class="form-control mt-6">
+                <button id="logoutBtn" class="btn bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] text-white border-0 shadow font-bold">Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // CHECK TOKEN
+        const token = localStorage.getItem('jwt');
+        if (!token) {
+            window.location.href = '/template_app/login.html';
+        } else {
+        }
+
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.onclick = () => {
+                localStorage.removeItem('jwt');
+                window.location.href = '/template_app/login.html';
+            };
+        }
+    </script>
+</body>
+</html>
