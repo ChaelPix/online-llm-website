@@ -1,0 +1,8 @@
+{
+  "id": "conv_code",
+  "name": "Code helper",
+  "messages": [
+    { "role": "user", "content": "How do I debounce an input in React?" },
+    { "role": "assistant", "content": "You can use useEffect with a timeout, or lodash/debounce...", "thinking": "Recall debounce pattern and provide minimal, practical example." }
+  ]
+}

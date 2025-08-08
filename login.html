@@ -1,35 +1,71 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cmyk">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="/template_app/favicon.png">
     <link href="output.css" rel="stylesheet">
-    <title>Template Website Login</title>
+    <title>Pix LLM</title>
 </head>
-<body class="h-screen bg-gradient-to-br from-[var(--color-body-gradient-from)] via-[var(--color-body-gradient-via)] to-[var(--color-body-gradient-to)] flex items-center justify-center text-black">
-    <div class="card w-96 bg-white shadow-xl border border-red-100">
-        <div class="h-2 w-full bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] rounded-t"></div>
-        <div class="card-body">
-            <h2 class="card-title justify-center mb-4 text-[var(--color-text-heading)]">Template Website Login</h2>
-            <form id="loginForm">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text text-black">Username</span>
-                    </label>
-                    <input type="text" id="username" class="input input-bordered bg-white text-black" required autofocus>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl border border-white/20 overflow-hidden">
+            <div class="px-8 py-10">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+                    <p class="text-gray-600">Sign in to Pix LLM</p>
                 </div>
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text text-black">Password</span>
-                    </label>
-                    <input type="password" id="password" class="input input-bordered bg-white text-black" required>
-                </div>
-                <div id="errorMsg" class="text-error text-sm mt-2 hidden"></div>
-                <div class="form-control mt-6">
-                    <button type="submit" class="btn bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] text-white border-0 shadow font-bold">Login</button>
-                </div>
-            </form>
+                <form id="loginForm" class="space-y-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                                Username
+                            </label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm" 
+                                placeholder="Enter your username"
+                                required 
+                                autofocus
+                            >
+                        </div>
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                Password
+                            </label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/50 backdrop-blur-sm" 
+                                placeholder="Enter your password"
+                                required
+                            >
+                        </div>
+                    </div>
+                    
+                    <div id="errorMsg" class="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200 hidden"></div>
+                    
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 shadow-lg"
+                    >
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Optional: Footer with additional info -->
+        <div class="text-center mt-6">
+            <p class="text-sm text-gray-500">
+                Secure AI conversation platform
+            </p>
         </div>
     </div>
     <script>

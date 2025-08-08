@@ -1,39 +1,418 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cmyk">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/template_app/favicon.png">
-    <link href="output.css" rel="stylesheet">
-    <title>Template Website</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/template_app/favicon.png" />
+    <link href="output.css" rel="stylesheet" />
+    <title>Pix LLM</title>
 </head>
-<body class="h-screen bg-gradient-to-br from-[var(--color-body-gradient-from)] via-[var(--color-body-gradient-via)] to-[var(--color-body-gradient-to)] text-black flex items-center justify-center">
-    <div class="card w-96 bg-white shadow-xl border border-red-100">
-        <div class="h-2 w-full bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] rounded-t"></div>
-        <div class="card-body">
-            <h2 class="card-title justify-center mb-4 text-[var(--color-text-heading)]">Welcome to the App!</h2>
-            <p class="text-center">This is your main application page.</p>
-            <div class="form-control mt-6">
-                <button id="logoutBtn" class="btn bg-gradient-to-r from-[var(--color-accent-gradient-from)] to-[var(--color-accent-gradient-to)] text-white border-0 shadow font-bold">Logout</button>
-            </div>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-gray-900">
+    <!-- App Shell -->
+    <div class="mx-auto max-w-[120rem] px-4 py-4 h-[100dvh]">
+        <div class="flex h-full gap-4">
+            <!-- Mobile overlay & drawer -->
+            <div id="mobileOverlay" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 hidden"></div>
+            <aside id="mobileDrawer" class="fixed z-50 inset-y-0 left-0 w-80 transform -translate-x-full transition-transform duration-200 md:hidden flex-col rounded-r-2xl bg-white/95 backdrop-blur border-r border-white/30 shadow-2xl overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100/60 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow ">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </div>
+                        <h2 class="font-semibold">Conversations</h2>
+                    </div>
+                    <button id="mobileCloseBtn" class="btn btn-ghost btn-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="px-4 pt-3">
+                    <button id="newChatBtnMobile" class="btn btn-sm w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-0 shadow hover:from-indigo-700 hover:to-purple-700 mb-3">New chat</button>
+                </div>
+                <div class="px-3 pb-4 overflow-y-auto flex-1">
+                    <ul id="conversationListMobile" class="space-y-1"></ul>
+                </div>
+            </aside>
+            <!-- Sidebar -->
+            <aside class="hidden md:flex w-80 flex-col rounded-2xl bg-white/80 backdrop-blur-sm border border-white/30 shadow-xl overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100/60">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-md">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-semibold">LLM Chat</h1>
+                            <p class="text-xs text-gray-500">Secure AI conversation</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button id="newChatBtn" class="btn btn-sm w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-0 shadow hover:from-indigo-700 hover:to-purple-700">New chat</button>
+                    </div>
+                </div>
+                <div class="px-3 py-3 overflow-y-auto flex-1" id="sidebarScroll">
+                    <p class="px-3 text-xs uppercase tracking-wider text-gray-500 mb-2">Conversations</p>
+                    <ul id="conversationList" class="space-y-1">
+                        <!-- Filled dynamically -->
+                    </ul>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-100/60">
+                    <button id="logoutBtn" class="btn btn-ghost btn-sm w-full justify-start">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"/></svg>
+                        Logout
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main -->
+            <main class="flex-1 flex flex-col rounded-2xl bg-white/80 backdrop-blur-sm border border-white/30 shadow-xl overflow-hidden">
+                <!-- Top bar -->
+                <div class="flex items-center justify-between px-4 md:px-6 py-4 border-b border-gray-100/60">
+                    <div class="flex items-center gap-3">
+                        <button id="mobileMenuBtn" class="md:hidden btn btn-ghost btn-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        </button>
+                        <h2 id="conversationTitle" class="text-lg font-semibold">New conversation</h2>
+                        <span id="unsavedDot" class="ml-1 hidden h-2 w-2 rounded-full bg-amber-400"></span>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <span class="text-sm text-gray-600">Thinking mode</span>
+                            <input id="thinkingToggle" type="checkbox" class="toggle toggle-primary" checked />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Messages area -->
+                <div id="messagesContainer" class="relative flex-1 overflow-hidden">
+                    <div id="messages" class="h-full overflow-y-auto px-3 md:px-6 py-6 pb-28 md:pb-32 space-y-4">
+                        <!-- Empty state -->
+                        <div id="emptyState" class="h-full flex flex-col items-center justify-center text-center text-gray-600 select-none">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-md mb-4">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h8m-8 4h6M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-2xl font-semibold mb-2">How can I help you?</h3>
+                            <p class="max-w-lg text-gray-500">Ask anything. Your conversations are private and stay on this device unless you choose to export them.</p>
+                        </div>
+                    </div>
+
+                    <!-- Input area -->
+                    <div class="absolute bottom-0 left-0 right-0 px-3 md:px-6 pb-5">
+                        <div class="rounded-2xl border border-gray-200 bg-white shadow-lg">
+                            <div class="p-3 md:p-4">
+                                <div class="flex items-end gap-3">
+                                    <textarea id="promptInput" rows="1" placeholder="Write your message..." class="flex-1 resize-none outline-none bg-transparent px-2 md:px-3 py-2 md:py-2.5 text-[15px] leading-relaxed max-h-40"></textarea>
+                                    <button id="sendBtn" class="btn btn-primary bg-gradient-to-r from-indigo-600 to-purple-600 border-0 hover:from-indigo-700 hover:to-purple-700 shadow disabled:opacity-40" disabled>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
-    
+
     <script>
-        // CHECK TOKEN
+        const BASE = '/template_app';
         const token = localStorage.getItem('jwt');
         if (!token) {
-            window.location.href = '/template_app/login.html';
-        } else {
+            window.location.href = `${BASE}/login.html`;
         }
 
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.onclick = () => {
-                localStorage.removeItem('jwt');
-                window.location.href = '/template_app/login.html';
-            };
+        // Elements
+    const conversationListEl = document.getElementById('conversationList');
+    const conversationListMobileEl = document.getElementById('conversationListMobile');
+        const messagesEl = document.getElementById('messages');
+        const emptyStateEl = document.getElementById('emptyState');
+        const promptInputEl = document.getElementById('promptInput');
+        const sendBtnEl = document.getElementById('sendBtn');
+        const logoutBtnEl = document.getElementById('logoutBtn');
+    const newChatBtnEl = document.getElementById('newChatBtn');
+    const newChatBtnMobileEl = document.getElementById('newChatBtnMobile');
+        const thinkingToggleEl = document.getElementById('thinkingToggle');
+        const conversationTitleEl = document.getElementById('conversationTitle');
+        const unsavedDotEl = document.getElementById('unsavedDot');
+    const mobileMenuBtnEl = document.getElementById('mobileMenuBtn');
+    const mobileCloseBtnEl = document.getElementById('mobileCloseBtn');
+    const mobileOverlayEl = document.getElementById('mobileOverlay');
+
+        // State
+        let conversationsIndex = [];
+        let currentConversation = null; // { id, name, messages: [{role, content, thinking?}] }
+        let thinkingMode = true;
+
+        // Helpers
+        function scrollToBottom() {
+            requestAnimationFrame(() => {
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            });
         }
+
+        function fmtId(prefix='conv') {
+            return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
+        }
+
+        function setUnsaved(flag) {
+            unsavedDotEl.classList.toggle('hidden', !flag);
+        }
+
+        function renderConversationList(items) {
+            conversationListEl.innerHTML = '';
+            if (conversationListMobileEl) conversationListMobileEl.innerHTML = '';
+            items.forEach(item => {
+                if (!item || !item.name || !item.file) return;
+                const makeRow = () => {
+                    const li = document.createElement('li');
+                    const btn = document.createElement('button');
+                    btn.className = 'w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50/70 transition flex items-center gap-2';
+                    btn.innerHTML = `
+                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-indigo-100 text-indigo-700 text-xs">${(item.name[0]||'C').toUpperCase()}</span>
+                        <span class="truncate">${item.name}</span>`;
+                    btn.onclick = () => {
+                        loadConversation(item);
+                        // close drawer if mobile
+                        mobileOverlayEl?.classList.add('hidden');
+                        mobileDrawer.classList.add('-translate-x-full');
+                    }
+                    li.appendChild(btn);
+                    return li;
+                }
+                conversationListEl.appendChild(makeRow());
+                if (conversationListMobileEl) conversationListMobileEl.appendChild(makeRow());
+            });
+        }
+
+        function messageBubble({ role, content, thinking, animate=false }) {
+            const isUser = role === 'user';
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${isUser ? 'justify-end' : 'justify-start'} w-full`;
+
+            const bubble = document.createElement('div');
+            bubble.className = [
+                'max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow',
+                isUser
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-none'
+                    : 'bg-white border border-gray-200 text-gray-900 rounded-bl-none'
+            ].join(' ');
+
+            // Thinking block (assistant only)
+            if (!isUser && thinkingMode && thinking) {
+                const think = document.createElement('details');
+                think.className = 'mb-2 group';
+                const summary = document.createElement('summary');
+                summary.className = 'list-none cursor-pointer text-xs text-gray-600 flex items-center gap-2 select-none';
+                summary.innerHTML = `
+                    <svg class="w-4 h-4 text-indigo-600 group-open:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <span class="font-medium">Model thoughts</span>
+                `;
+                const panel = document.createElement('div');
+                panel.className = 'mt-2 text-xs text-gray-600 bg-indigo-50/60 border border-indigo-100 rounded-xl p-3';
+                panel.textContent = thinking;
+                think.appendChild(summary);
+                think.appendChild(panel);
+                bubble.appendChild(think);
+            }
+
+            const contentEl = document.createElement('div');
+            contentEl.className = 'prose prose-sm max-w-none';
+            contentEl.textContent = content;
+            bubble.appendChild(contentEl);
+
+            if (animate) {
+                bubble.style.opacity = '0';
+                bubble.style.transform = 'translateY(6px)';
+                requestAnimationFrame(() => {
+                    bubble.style.transition = 'all 200ms ease';
+                    bubble.style.opacity = '1';
+                    bubble.style.transform = 'translateY(0)';
+                });
+            }
+
+            wrapper.appendChild(bubble);
+            return wrapper;
+        }
+
+        function renderMessages(conv) {
+            messagesEl.innerHTML = '';
+            const hasMessages = conv && Array.isArray(conv.messages) && conv.messages.length > 0;
+            emptyStateEl.classList.toggle('hidden', !!hasMessages);
+            if (!hasMessages) return;
+            conv.messages.forEach(msg => {
+                messagesEl.appendChild(messageBubble(msg));
+            });
+            scrollToBottom();
+        }
+
+        async function loadConversation(item) {
+            try {
+                const res = await fetch(`${BASE}/conversations/${item.file}`);
+                const data = await res.json();
+                if (!data || !Array.isArray(data.messages)) throw new Error('Invalid conversation file');
+                currentConversation = {
+                    id: data.id || fmtId('conv'),
+                    name: data.name || item.name || 'Conversation',
+                    messages: data.messages || []
+                };
+                conversationTitleEl.textContent = currentConversation.name;
+                renderMessages(currentConversation);
+                setUnsaved(false);
+            } catch (e) {
+                console.error('Failed to load conversation', e);
+            }
+        }
+
+        async function loadIndex() {
+            try {
+                const res = await fetch(`${BASE}/conversations/index.json`, { cache: 'no-cache' });
+                const idx = await res.json();
+                const valid = Array.isArray(idx) ? idx.filter(x => x && x.name && x.file) : [];
+                conversationsIndex = valid;
+                renderConversationList(valid);
+            } catch (e) {
+                console.warn('No conversations index found, using empty list');
+                conversationsIndex = [];
+                renderConversationList([]);
+            }
+        }
+
+        function ensureConversation() {
+            if (!currentConversation) {
+                currentConversation = { id: fmtId('conv'), name: 'New conversation', messages: [] };
+                conversationTitleEl.textContent = currentConversation.name;
+            }
+        }
+
+        function addUserMessage(text) {
+            const msg = { role: 'user', content: text, animate: true };
+            currentConversation.messages.push(msg);
+            messagesEl.appendChild(messageBubble(msg));
+            setUnsaved(true);
+            scrollToBottom();
+        }
+
+        function addAssistantPlaceholder() {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'flex justify-start w-full';
+            placeholder.innerHTML = `
+                <div class="max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow bg-white border border-gray-200 rounded-bl-none">
+                    ${thinkingMode ? '<div class="mb-2 text-xs text-gray-600 bg-indigo-50/60 border border-indigo-100 rounded-xl p-3">Thinking…</div>' : ''}
+                    <div class="flex items-center gap-2 text-gray-500">
+                        <span class="loading loading-spinner loading-sm text-indigo-600"></span>
+                        <span>Generating response…</span>
+                    </div>
+                </div>
+            `;
+            messagesEl.appendChild(placeholder);
+            scrollToBottom();
+            return placeholder;
+        }
+
+        function replaceAssistantPlaceholder(placeholder, text, thinking) {
+            const idx = Array.from(messagesEl.children).indexOf(placeholder);
+            placeholder.remove();
+            const msg = { role: 'assistant', content: text, thinking, animate: true };
+            currentConversation.messages.push(msg);
+            messagesEl.appendChild(messageBubble(msg));
+            setUnsaved(true);
+            scrollToBottom();
+        }
+
+        async function sendToBackend(prompt) {
+            try {
+                const res = await fetch(`${BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        conversationId: currentConversation?.id,
+                        message: prompt,
+                        thinking: thinkingMode
+                    })
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                return { text: data.reply || '', thinking: data.thinking || '' };
+            } catch (e) {
+                // Fallback mock for demo purposes
+                const mockThinking = thinkingMode ? 'Analyzing your request, retrieving relevant knowledge, and planning a structured response…' : '';
+                return new Promise(resolve => setTimeout(() => resolve({
+                    text: `This is a demo response to: "${prompt}"`,
+                    thinking: mockThinking
+                }), 700));
+            }
+        }
+
+        // Events
+        promptInputEl.addEventListener('input', () => {
+            sendBtnEl.disabled = !promptInputEl.value.trim();
+            promptInputEl.style.height = 'auto';
+            promptInputEl.style.height = Math.min(promptInputEl.scrollHeight, 160) + 'px';
+        });
+
+        promptInputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendBtnEl.click();
+            }
+        });
+
+        sendBtnEl.addEventListener('click', async () => {
+            const text = promptInputEl.value.trim();
+            if (!text) return;
+            ensureConversation();
+            addUserMessage(text);
+            promptInputEl.value = '';
+            promptInputEl.dispatchEvent(new Event('input'));
+
+            const ph = addAssistantPlaceholder();
+            const { text: reply, thinking } = await sendToBackend(text);
+            replaceAssistantPlaceholder(ph, reply, thinking);
+        });
+
+        logoutBtnEl?.addEventListener('click', () => {
+            localStorage.removeItem('jwt');
+            window.location.href = `${BASE}/login.html`;
+        });
+
+    function newChat() {
+            currentConversation = { id: fmtId('conv'), name: 'New conversation', messages: [] };
+            conversationTitleEl.textContent = currentConversation.name;
+            renderMessages(currentConversation);
+            setUnsaved(false);
+            promptInputEl.focus();
+    }
+    newChatBtnEl?.addEventListener('click', newChat);
+    newChatBtnMobileEl?.addEventListener('click', () => { newChat(); mobileOverlayEl?.classList.add('hidden'); mobileDrawer.classList.add('-translate-x-full'); });
+
+        thinkingToggleEl?.addEventListener('change', () => {
+            thinkingMode = !!thinkingToggleEl.checked;
+            // Re-render to hide/show thinking blocks
+            if (currentConversation) renderMessages(currentConversation);
+        });
+
+        // Mobile drawer
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        function openDrawer() {
+            mobileOverlayEl?.classList.remove('hidden');
+            mobileDrawer.classList.remove('-translate-x-full');
+        }
+        function closeDrawer() {
+            mobileOverlayEl?.classList.add('hidden');
+            mobileDrawer.classList.add('-translate-x-full');
+        }
+        mobileMenuBtnEl?.addEventListener('click', openDrawer);
+        mobileCloseBtnEl?.addEventListener('click', closeDrawer);
+        mobileOverlayEl?.addEventListener('click', closeDrawer);
+
+        // Init
+        loadIndex();
     </script>
 </body>
 </html>

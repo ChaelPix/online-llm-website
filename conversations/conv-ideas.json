@@ -1,0 +1,8 @@
+{
+  "id": "conv_ideas",
+  "name": "Product ideas",
+  "messages": [
+    { "role": "user", "content": "Give me 3 AI-powered product ideas for note-taking." },
+    { "role": "assistant", "content": "Here are three product ideas...", "thinking": "Identify user needs; consider mobile and desktop; propose concise ideas." }
+  ]
+}
